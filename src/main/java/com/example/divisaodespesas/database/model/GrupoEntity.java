@@ -18,7 +18,7 @@ public class GrupoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String nomeGrupo;
     @Column
     @Builder.Default
@@ -34,7 +34,8 @@ public class GrupoEntity {
             inverseJoinColumns = @JoinColumn(name = "pessoa_id")
     )
     private Set<PessoaEntity> pessoa = new HashSet<>();
-    @OneToMany
+
+    @OneToMany(mappedBy = "grupo")
     @Builder.Default
     private Set<DespesaEntity> despesas = new HashSet<>();
 }
