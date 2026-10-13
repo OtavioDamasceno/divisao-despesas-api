@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class PessoaService {
 
-    private static IPessoaRepository pessoaRepository;
+    private final IPessoaRepository pessoaRepository;
     private static final String EMAIL_REGEX =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     private static final Pattern PATTERN = Pattern.compile(EMAIL_REGEX);
