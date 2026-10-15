@@ -7,7 +7,7 @@ import com.example.divisaodespesas.database.model.enums.TipoDivisao;
 import com.example.divisaodespesas.database.repository.IDespesaRepository;
 import com.example.divisaodespesas.database.repository.IParcelaRepository;
 import com.example.divisaodespesas.database.repository.IPessoaRepository;
-import com.example.divisaodespesas.dto.ParcelaDTO;
+import com.example.divisaodespesas.dto.parcela.ParcelaRequestDTO;
 import com.example.divisaodespesas.exception.BadRequestException;
 import com.example.divisaodespesas.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +28,11 @@ public class ParcelaService {
 
     //busca parcela por id, converte o entity para DTO
     @Transactional(readOnly = true)
-    public ParcelaDTO buscarPorId(Integer id) throws NotFoundException {
+    public ParcelaRequestDTO buscarPorId(Integer id) throws NotFoundException {
         ParcelaEntity parcela = parcelaRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("parcela não encontrada"));
 
-        ParcelaDTO parcelaResponse = new ParcelaDTO(parcela.getValor_da_parcela(),
+        ParcelaRequestDTO parcelaResponse = new ParcelaRequestDTO(parcela.getValor_da_parcela(),
                 parcela.getDespesa().getId(),
                 parcela.getPessoa().getId());
 
@@ -42,12 +42,12 @@ public class ParcelaService {
     //retorna a lista de parcelas de uma pessoa, o metodo converte para dto e adiciona a lista
     // dentro do foreach
     @Transactional(readOnly = true)
-    public Set<ParcelaDTO> listarPorPessoa(Integer pessoaId) throws NotFoundException {
+    public Set<ParcelaRequestDTO> listarPorPessoa(Integer pessoaId) throws NotFoundException {
         PessoaEntity pessoa = pessoaRepository.findById(pessoaId)
                 .orElseThrow(() -> new NotFoundException("Pessoa não encontrada"));
-        Set<ParcelaDTO> parcelas = new HashSet<>();
+        Set<ParcelaRequestDTO> parcelas = new HashSet<>();
         for (ParcelaEntity parcela : pessoa.getParcelas()) {
-            ParcelaDTO dto = new ParcelaDTO(
+            ParcelaRequestDTO dto = new ParcelaRequestDTO(
                     parcela.getValor_da_parcela(),
                     parcela.getDespesa().getId(),
                     parcela.getPessoa().getId()
@@ -59,13 +59,13 @@ public class ParcelaService {
 
     //mesma coisa do listarPorPessoa(). Mas é recebido o Id de uma despesa.
     @Transactional(readOnly = true)
-    public Set<ParcelaDTO> listarPorDespesa(Integer despesaId) throws NotFoundException {
+    public Set<ParcelaRequestDTO> listarPorDespesa(Integer despesaId) throws NotFoundException {
         DespesaEntity despesa = despesaRepository.findById(despesaId)
                 .orElseThrow(() -> new NotFoundException("Despesa não encontrada"));
 
-        Set<ParcelaDTO> parcelas = new HashSet<>();
+        Set<ParcelaRequestDTO> parcelas = new HashSet<>();
         for (ParcelaEntity parcela : despesa.getParcelas()) {
-            ParcelaDTO dto = new ParcelaDTO(
+            ParcelaRequestDTO dto = new ParcelaRequestDTO(
                     parcela.getValor_da_parcela(),
                     parcela.getDespesa().getId(),
                     parcela.getPessoa().getId()
@@ -123,7 +123,7 @@ public class ParcelaService {
     }
 
     public Set<ParcelaEntity> gerarDivisaoPersonalizada(DespesaEntity despesa,
-                                                        List<ParcelaDTO> parcelasInformadas) throws BadRequestException, NotFoundException {
+                                                        List<ParcelaRequestDTO> parcelasInformadas) throws BadRequestException, NotFoundException {
         //validação de erros
         validarDadosDaDespesa(despesa);
         if (parcelasInformadas.isEmpty()) {
@@ -135,7 +135,7 @@ public class ParcelaService {
 
         //criacao do Set
         Set<ParcelaEntity> parcelas = new HashSet<>();
-        for (ParcelaDTO parcelaInformada : parcelasInformadas) {
+        for (ParcelaRequestDTO parcelaInformada : parcelasInformadas) {
             //consulta de pessoa dentro de parcelasInformadas
             Integer pessoaId = parcelaInformada.getPessoaId();
             PessoaEntity pessoa = pessoaRepository.findById(pessoaId)

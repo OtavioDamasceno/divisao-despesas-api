@@ -1,7 +1,7 @@
 package com.example.divisaodespesas.controller;
 
 import com.example.divisaodespesas.database.model.ParcelaEntity;
-import com.example.divisaodespesas.dto.PessoaDTO;
+import com.example.divisaodespesas.dto.pessoa.PessoaRequestDTO;
 import com.example.divisaodespesas.exception.BadRequestException;
 import com.example.divisaodespesas.exception.NotFoundException;
 import com.example.divisaodespesas.service.PessoaService;
@@ -23,8 +23,8 @@ public class PessoaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public void criarPessoa(@Valid @RequestBody PessoaDTO pessoaDTO) throws BadRequestException {
-        pessoaService.criarPessoa(pessoaDTO);
+    public void criarPessoa(@Valid @RequestBody PessoaRequestDTO pessoaRequestDTO) throws BadRequestException {
+        pessoaService.criarPessoa(pessoaRequestDTO);
     }
 
     @GetMapping("/{email}/parcelas")

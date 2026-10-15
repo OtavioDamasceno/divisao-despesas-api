@@ -1,11 +1,9 @@
 package com.example.divisaodespesas.service;
 
-import com.example.divisaodespesas.database.model.DespesaEntity;
-import com.example.divisaodespesas.database.model.GrupoEntity;
 import com.example.divisaodespesas.database.model.ParcelaEntity;
 import com.example.divisaodespesas.database.model.PessoaEntity;
 import com.example.divisaodespesas.database.repository.IPessoaRepository;
-import com.example.divisaodespesas.dto.PessoaDTO;
+import com.example.divisaodespesas.dto.pessoa.PessoaRequestDTO;
 import com.example.divisaodespesas.exception.BadRequestException;
 import com.example.divisaodespesas.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,19 +23,19 @@ public class PessoaService {
     private static final Pattern PATTERN = Pattern.compile(EMAIL_REGEX);
 
 
-    public void criarPessoa(PessoaDTO pessoaDTO) throws BadRequestException {
-        Matcher matcher = PATTERN.matcher(pessoaDTO.getEmail());
+    public void criarPessoa(PessoaRequestDTO pessoaRequestDTO) throws BadRequestException {
+        Matcher matcher = PATTERN.matcher(pessoaRequestDTO.getEmail());
         if(!matcher.matches()){
             throw new BadRequestException("formato do email invalido");
         }
-        PessoaEntity pessoa = pessoaRepository.findByEmail(pessoaDTO.getEmail())
+        PessoaEntity pessoa = pessoaRepository.findByEmail(pessoaRequestDTO.getEmail())
                 .orElse(null);
         if(pessoa != null){
             throw new BadRequestException("Essa pessoa ja foi cadastrada");
         }
         pessoaRepository.save(PessoaEntity.builder()
-                        .nome(pessoaDTO.getNome())
-                        .email(pessoaDTO.getEmail())
+                        .nome(pessoaRequestDTO.getNome())
+                        .email(pessoaRequestDTO.getEmail())
                 .build());
     }
 
