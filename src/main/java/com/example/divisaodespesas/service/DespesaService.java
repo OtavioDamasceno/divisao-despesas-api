@@ -90,20 +90,20 @@ public class DespesaService {
         despesaEntity.setGrupo(grupoEntity);
 
         Set<ParcelaEntity> parcelas;
-        if(despesaRequestDTO.getTipoDivisao() == TipoDivisao.IGUALITARIA){
+        if (despesaRequestDTO.getTipoDivisao() == TipoDivisao.IGUALITARIA) {
             if (despesaRequestDTO.getBeneficiariosId() == null
                     || despesaRequestDTO.getBeneficiariosId().isEmpty()) {
                 throw new BadRequestException("Informe os beneficiários");
             }
             Set<PessoaEntity> beneficiarios = new HashSet<>();
-            for(Integer pessoaId: despesaRequestDTO.getBeneficiariosId()){
+            for (Integer pessoaId : despesaRequestDTO.getBeneficiariosId()) {
                 PessoaEntity beneficiario = pessoaRepository.findById(pessoaId)
                         .orElseThrow(() -> new NotFoundException("Beneficiario nao encontrado"));
                 beneficiarios.add(beneficiario);
             }
-               parcelas = parcelaService.gerarDivisaoIgualitaria(despesaEntity, beneficiarios);
+            parcelas = parcelaService.gerarDivisaoIgualitaria(despesaEntity, beneficiarios);
 
-        }else if(despesaRequestDTO.getTipoDivisao() == TipoDivisao.PERSONALIZADA){
+        } else if (despesaRequestDTO.getTipoDivisao() == TipoDivisao.PERSONALIZADA) {
             if (despesaRequestDTO.getParcelas() == null
                     || despesaRequestDTO.getParcelas().isEmpty()) {
                 throw new BadRequestException("Informe as parcelas da divisão personalizada");
@@ -112,8 +112,7 @@ public class DespesaService {
             parcelas = parcelaService.gerarDivisaoPersonalizada(despesaEntity,
                     despesaRequestDTO.getParcelas());
 
-        }
-        else{
+        } else {
             throw new BadRequestException("Tipo de divisao invalido");
         }
         despesaRepository.save(despesaEntity);
@@ -121,4 +120,36 @@ public class DespesaService {
         despesaEntity.setParcelas(parcelas);
     }
 
+    @Transactional(readOnly = true)
+    public Set<DespesaResponseDTO> listarPorGrupo(Integer grupoId) throws NotFoundException {
+        GrupoEntity grupo = grupoRepository.findById(grupoId)
+                .orElseThrow(() -> new NotFoundException("Grupo nao encontrado"));
+
+        Set<DespesaResponseDTO> despesaResponses = new HashSet<>();
+
+        for (DespesaEntity despesa : grupo.getDespesas()) {
+            DespesaResponseDTO despesaResponse = new DespesaResponseDTO();
+            despesaResponse.setDescricao(despesa.getDescricao());
+            despesaResponse.setGrupoId(despesa.getGrupo().getId());
+            despesaResponse.setIdPagador(despesa.getPagador().getId());
+            despesaResponse.setValorTotal(despesa.getValorTotal());
+            despesaResponse.setId(despesa.getId());
+            despesaResponse.setTipoDivisao(despesa.getTipoDivisao());
+
+            Set<ParcelaResponseDTO> parcelasResponse = new HashSet<>();
+            for (ParcelaEntity parcela : despesa.getParcelas()) {
+                ParcelaResponseDTO parcelaDTO = new ParcelaResponseDTO();
+                parcelaDTO.setId(parcela.getId());
+                parcelaDTO.setValor_da_parcela(parcela.getValor_da_parcela());
+                parcelaDTO.setDespesaId(despesa.getId());
+                parcelaDTO.setPessoaId(parcela.getPessoa().getId());
+
+                parcelasResponse.add(parcelaDTO);
+
+            }
+            despesaResponse.setParcelas(parcelasResponse);
+            despesaResponses.add(despesaResponse);
+        }
+        return despesaResponses;
+    }
 }
