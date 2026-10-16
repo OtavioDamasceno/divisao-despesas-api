@@ -32,7 +32,7 @@ public class DespesaRequestDTO {
     @NotNull
     @Positive
     private Integer idPagador;
-    private Set<Integer> beneficiariosId;
+    private Set<@NotNull @Positive Integer> beneficiariosId;
     @Valid
     private List<ParcelaRequestDTO> parcelas;
 }
