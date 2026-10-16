@@ -152,4 +152,36 @@ public class DespesaService {
         }
         return despesaResponses;
     }
+
+    @Transactional(readOnly = true)
+    public Set<DespesaResponseDTO> listarPorPagador(Integer pessoaId) throws NotFoundException {
+        PessoaEntity pessoa = pessoaRepository.findById(pessoaId)
+                .orElseThrow(() -> new NotFoundException("Pessoa nao encontrada"));
+        Set<DespesaResponseDTO> despesas = new HashSet<>();
+
+        for (DespesaEntity despesa : pessoa.getDespesasPagas()) {
+            DespesaResponseDTO dto = new DespesaResponseDTO();
+            dto.setId(despesa.getId());
+            dto.setDescricao(despesa.getDescricao());
+            dto.setValorTotal(despesa.getValorTotal());
+            dto.setTipoDivisao(despesa.getTipoDivisao());
+            dto.setGrupoId(despesa.getGrupo().getId());
+            dto.setIdPagador(pessoa.getId());
+
+            Set<ParcelaResponseDTO> parcelas = new HashSet<>();
+            for (ParcelaEntity parcela : despesa.getParcelas()) {
+                ParcelaResponseDTO parcelaDTO = new ParcelaResponseDTO();
+                parcelaDTO.setId(parcela.getId());
+                parcelaDTO.setValor_da_parcela(parcela.getValor_da_parcela());
+                parcelaDTO.setDespesaId(despesa.getId());
+                parcelaDTO.setPessoaId(parcela.getPessoa().getId());
+
+                parcelas.add(parcelaDTO);
+            }
+            dto.setParcelas(parcelas);
+            despesas.add(dto);
+        }
+        return despesas;
+    }
+
 }
