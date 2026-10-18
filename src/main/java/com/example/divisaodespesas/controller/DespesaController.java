@@ -27,7 +27,7 @@ public class DespesaController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public DespesaResponseDTO buscarPorId(Integer id) throws NotFoundException {
+    public DespesaResponseDTO buscarPorId(@PathVariable Integer id) throws NotFoundException {
         return despesaService.buscaPorId(id);
     }
 
