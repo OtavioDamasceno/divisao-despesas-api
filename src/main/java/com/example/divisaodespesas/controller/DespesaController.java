@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
 @RequestMapping("/despesa")
 @RequiredArgsConstructor
@@ -31,4 +33,9 @@ public class DespesaController {
         return despesaService.buscaPorId(id);
     }
 
+    @GetMapping("/grupo/{grupoid}")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<DespesaResponseDTO> listarPorGrupo(@PathVariable Integer grupoId) throws NotFoundException {
+        return despesaService.listarPorGrupo(grupoId);
+    }
 }
