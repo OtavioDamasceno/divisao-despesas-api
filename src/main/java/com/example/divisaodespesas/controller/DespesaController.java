@@ -22,7 +22,7 @@ public class DespesaController {
     private final DespesaService despesaService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public void criarDespesa(@Valid @RequestBody DespesaRequestDTO despesaRequestDTO) throws NotFoundException, BadRequestException {
         despesaService.criarDespesa(despesaRequestDTO);
     }
@@ -33,7 +33,7 @@ public class DespesaController {
         return despesaService.buscaPorId(id);
     }
 
-    @GetMapping("/grupo/{grupoid}")
+    @GetMapping("/grupo/{grupoId}")
     @ResponseStatus(HttpStatus.OK)
     public Set<DespesaResponseDTO> listarPorGrupo(@PathVariable Integer grupoId) throws NotFoundException {
         return despesaService.listarPorGrupo(grupoId);
