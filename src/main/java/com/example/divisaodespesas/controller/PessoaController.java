@@ -22,7 +22,7 @@ public class PessoaController {
     private final PessoaService pessoaService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public void criarPessoa(@Valid @RequestBody PessoaRequestDTO pessoaRequestDTO) throws BadRequestException {
         pessoaService.criarPessoa(pessoaRequestDTO);
     }
