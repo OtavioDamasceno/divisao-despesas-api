@@ -24,4 +24,11 @@ public class DespesaController {
     public void criarDespesa(@Valid @RequestBody DespesaRequestDTO despesaRequestDTO) throws NotFoundException, BadRequestException {
         despesaService.criarDespesa(despesaRequestDTO);
     }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public DespesaResponseDTO buscarPorId(Integer id) throws NotFoundException {
+        return despesaService.buscaPorId(id);
+    }
+
 }
