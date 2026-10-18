@@ -38,4 +38,9 @@ public class DespesaController {
     public Set<DespesaResponseDTO> listarPorGrupo(@PathVariable Integer grupoId) throws NotFoundException {
         return despesaService.listarPorGrupo(grupoId);
     }
+    @GetMapping("/pagador/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<DespesaResponseDTO> listarPorPagador(@PathVariable Integer id) throws NotFoundException {
+        return despesaService.listarPorPagador(id);
+    }
 }
