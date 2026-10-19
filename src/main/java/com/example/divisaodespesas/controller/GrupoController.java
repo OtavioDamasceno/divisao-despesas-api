@@ -1,7 +1,9 @@
 package com.example.divisaodespesas.controller;
 
 import com.example.divisaodespesas.dto.grupo.GrupoRequestDTO;
+import com.example.divisaodespesas.dto.grupo.GrupoResponseDTO;
 import com.example.divisaodespesas.exception.BadRequestException;
+import com.example.divisaodespesas.exception.NotFoundException;
 import com.example.divisaodespesas.service.GrupoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +20,14 @@ public class GrupoController {
     private final GrupoService grupoService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public void criarGrupo(@Valid @RequestBody GrupoRequestDTO grupoRequestDTO) throws BadRequestException {
         grupoService.criarGrupo(grupoRequestDTO);
+    }
+
+    @GetMapping("/{grupoId}")
+    @ResponseStatus(HttpStatus.OK)
+    public GrupoResponseDTO buscaPorId(@PathVariable Integer grupoId) throws NotFoundException {
+        return grupoService.buscarPorId(grupoId);
     }
 }
