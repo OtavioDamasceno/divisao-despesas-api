@@ -1,7 +1,9 @@
 package com.example.divisaodespesas.service;
 
 import com.example.divisaodespesas.database.model.GrupoEntity;
+import com.example.divisaodespesas.database.model.PessoaEntity;
 import com.example.divisaodespesas.database.repository.IGrupoRepository;
+import com.example.divisaodespesas.database.repository.IPessoaRepository;
 import com.example.divisaodespesas.dto.despesa.DespesaResponseDTO;
 import com.example.divisaodespesas.dto.grupo.GrupoRequestDTO;
 import com.example.divisaodespesas.dto.grupo.GrupoResponseDTO;
@@ -19,10 +21,11 @@ import java.util.Set;
 public class GrupoService {
 
     private final IGrupoRepository grupoRepository;
+    private final IPessoaRepository pessoaRepository;
 
     @Transactional
     public void criarGrupo(GrupoRequestDTO grupoRequestDTO) throws BadRequestException {
-        if(!"BRL".equals(grupoRequestDTO.getMoeda())){
+        if (!"BRL".equals(grupoRequestDTO.getMoeda())) {
             throw new BadRequestException("A moeda deve ser BRL");
         }
         GrupoEntity grupoEntity = new GrupoEntity();
@@ -60,5 +63,25 @@ public class GrupoService {
         }
 
         return gruposResponse;
+    }
+
+    @Transactional
+    public void adicionarPessoa(Integer pessoaId, Integer grupoId) throws NotFoundException, BadRequestException {
+        PessoaEntity pessoaEntity = pessoaRepository.findById(pessoaId)
+                .orElseThrow(() -> new NotFoundException("Pessoa nao encontrada"));
+        GrupoEntity grupoEntity = grupoRepository.findById(grupoId)
+                .orElseThrow(() -> new NotFoundException("Grupo nao encontrado"));
+
+        if (!grupoEntity.isSituacao()) {
+            throw new BadRequestException("O grupo se encontra fechado");
+        }
+        for (PessoaEntity pessoa : grupoEntity.getPessoa()) {
+            if (pessoa.getId().equals(pessoaId)) {
+                throw new BadRequestException("Pessoa ja adicionada ao grupo");
+            }
+        }
+        grupoEntity.getPessoa().add(pessoaEntity);
+        pessoaEntity.getGrupo().add(grupoEntity);
+
     }
 }
