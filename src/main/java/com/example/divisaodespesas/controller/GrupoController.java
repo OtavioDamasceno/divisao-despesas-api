@@ -37,4 +37,9 @@ public class GrupoController {
     public Set<GrupoResponseDTO> listarGrupos(){
         return grupoService.listarGrupos();
     }
+    @PostMapping("/{grupoId}/pessoas/{pessoaId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void adicionarPessoa(@PathVariable("grupoId") Integer grupoId,@PathVariable("pessoaId")  Integer pessoaId) throws NotFoundException, BadRequestException {
+        grupoService.adicionarPessoa(grupoId, pessoaId);
+    }
 }
