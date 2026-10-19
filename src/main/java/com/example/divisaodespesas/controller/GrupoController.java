@@ -50,4 +50,10 @@ public class GrupoController {
     public void removerPessoa(@PathVariable("grupoId") Integer grupoId, @PathVariable("pessoaId") Integer pessoaId) throws NotFoundException, BadRequestException {
         grupoService.removerPessoa(grupoId, pessoaId);
     }
+
+    @PatchMapping("/{grupoId}/fechamento")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void fecharGrupo(@PathVariable Integer grupoId) throws BadRequestException, NotFoundException {
+        grupoService.fecharGrupo(grupoId);
+    }
 }
