@@ -1,6 +1,8 @@
 package com.example.divisaodespesas.service;
 
+import com.example.divisaodespesas.database.model.DespesaEntity;
 import com.example.divisaodespesas.database.model.GrupoEntity;
+import com.example.divisaodespesas.database.model.ParcelaEntity;
 import com.example.divisaodespesas.database.model.PessoaEntity;
 import com.example.divisaodespesas.database.repository.IGrupoRepository;
 import com.example.divisaodespesas.database.repository.IPessoaRepository;
@@ -82,6 +84,37 @@ public class GrupoService {
         }
         grupoEntity.getPessoa().add(pessoaEntity);
         pessoaEntity.getGrupo().add(grupoEntity);
-
+    }
+    @Transactional
+    public void removerPessoa(Integer pessoaId, Integer grupoId) throws NotFoundException, BadRequestException {
+        PessoaEntity pessoaEntity = pessoaRepository.findById(pessoaId)
+                .orElseThrow(() -> new NotFoundException("Pessoa nao encontrada"));
+        GrupoEntity grupoEntity = grupoRepository.findById(grupoId)
+                .orElseThrow(() -> new NotFoundException("Grupo nao encontrado"));
+        if(!grupoEntity.isSituacao()){
+            throw new BadRequestException("O grupo se encontra fechado");
+        }
+        boolean pertenceAoGrupo = false;
+        for (PessoaEntity pessoa : grupoEntity.getPessoa()) {
+            if (pessoa.getId().equals(pessoaId)) {
+                pertenceAoGrupo = true;
+                break;
+            }
+        }
+        if (!pertenceAoGrupo) {
+            throw new BadRequestException("Essa pessoa não pertence ao grupo");
+        }
+        for (DespesaEntity despesa : pessoaEntity.getDespesasPagas()) {
+            if(despesa.getGrupo().getId().equals(grupoId)){
+                throw new BadRequestException("A pessoa possui despesas pagas neste grupo e nao pode ser removida");
+            }
+        }
+        for (ParcelaEntity parcela : pessoaEntity.getParcelas()) {
+            if (parcela.getDespesa().getGrupo().getId().equals(grupoId)) {
+                throw new BadRequestException("A pessoa possui parcelas neste grupo e não pode ser removida");
+            }
+        }
+        grupoEntity.getPessoa().remove(pessoaEntity);
+        pessoaEntity.getGrupo().remove(grupoEntity);
     }
 }
