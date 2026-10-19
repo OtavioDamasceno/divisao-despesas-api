@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class GrupoService {
@@ -29,7 +32,7 @@ public class GrupoService {
 
         grupoRepository.save(grupoEntity);
     }
-    
+
     @Transactional(readOnly = true)
     public GrupoResponseDTO buscarPorId(Integer grupoId) throws NotFoundException {
         GrupoEntity grupoEntity = grupoRepository.findById(grupoId)
@@ -41,5 +44,21 @@ public class GrupoService {
         grupoResponseDTO.setSituacao(grupoEntity.isSituacao());
 
         return grupoResponseDTO;
+    }
+
+    @Transactional(readOnly = true)
+    public Set<GrupoResponseDTO> listarGrupos() {
+        Set<GrupoResponseDTO> gruposResponse = new HashSet<>();
+
+        for (GrupoEntity grupo : grupoRepository.findAll()) {
+            GrupoResponseDTO grupoResponseDTO = new GrupoResponseDTO();
+            grupoResponseDTO.setId(grupo.getId());
+            grupoResponseDTO.setSituacao(grupo.isSituacao());
+            grupoResponseDTO.setMoeda(grupo.getMoeda());
+            grupoResponseDTO.setNomeGrupo(grupo.getNomeGrupo());
+            gruposResponse.add(grupoResponseDTO);
+        }
+
+        return gruposResponse;
     }
 }
