@@ -42,13 +42,13 @@ public class GrupoController {
     @PostMapping("/{grupoId}/pessoas/{pessoaId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void adicionarPessoa(@PathVariable("grupoId") Integer grupoId, @PathVariable("pessoaId") Integer pessoaId) throws NotFoundException, BadRequestException {
-        grupoService.adicionarPessoa(grupoId, pessoaId);
+        grupoService.adicionarPessoa(pessoaId, grupoId);
     }
 
     @DeleteMapping("/{grupoId}/pessoas/{pessoaId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removerPessoa(@PathVariable("grupoId") Integer grupoId, @PathVariable("pessoaId") Integer pessoaId) throws NotFoundException, BadRequestException {
-        grupoService.removerPessoa(grupoId, pessoaId);
+        grupoService.removerPessoa(pessoaId, grupoId);
     }
 
     @PatchMapping("/{grupoId}/fechamento")
