@@ -11,8 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
-@RequestMapping("/grupo")
+@RequestMapping("/grupos")
 @RequiredArgsConstructor
 @Validated
 public class GrupoController {
@@ -29,5 +31,10 @@ public class GrupoController {
     @ResponseStatus(HttpStatus.OK)
     public GrupoResponseDTO buscaPorId(@PathVariable Integer grupoId) throws NotFoundException {
         return grupoService.buscarPorId(grupoId);
+    }
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Set<GrupoResponseDTO> listarGrupos(){
+        return grupoService.listarGrupos();
     }
 }
