@@ -32,14 +32,22 @@ public class GrupoController {
     public GrupoResponseDTO buscaPorId(@PathVariable Integer grupoId) throws NotFoundException {
         return grupoService.buscarPorId(grupoId);
     }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Set<GrupoResponseDTO> listarGrupos(){
+    public Set<GrupoResponseDTO> listarGrupos() {
         return grupoService.listarGrupos();
     }
+
     @PostMapping("/{grupoId}/pessoas/{pessoaId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void adicionarPessoa(@PathVariable("grupoId") Integer grupoId,@PathVariable("pessoaId")  Integer pessoaId) throws NotFoundException, BadRequestException {
+    public void adicionarPessoa(@PathVariable("grupoId") Integer grupoId, @PathVariable("pessoaId") Integer pessoaId) throws NotFoundException, BadRequestException {
         grupoService.adicionarPessoa(grupoId, pessoaId);
+    }
+
+    @DeleteMapping("/{grupoId}/pessoas/{pessoaId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removerPessoa(@PathVariable("grupoId") Integer grupoId, @PathVariable("pessoaId") Integer pessoaId) throws NotFoundException, BadRequestException {
+        grupoService.removerPessoa(grupoId, pessoaId);
     }
 }
