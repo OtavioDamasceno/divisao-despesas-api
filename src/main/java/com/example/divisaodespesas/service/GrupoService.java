@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -85,13 +86,14 @@ public class GrupoService {
         grupoEntity.getPessoa().add(pessoaEntity);
         pessoaEntity.getGrupo().add(grupoEntity);
     }
+
     @Transactional
     public void removerPessoa(Integer pessoaId, Integer grupoId) throws NotFoundException, BadRequestException {
         PessoaEntity pessoaEntity = pessoaRepository.findById(pessoaId)
                 .orElseThrow(() -> new NotFoundException("Pessoa nao encontrada"));
         GrupoEntity grupoEntity = grupoRepository.findById(grupoId)
                 .orElseThrow(() -> new NotFoundException("Grupo nao encontrado"));
-        if(!grupoEntity.isSituacao()){
+        if (!grupoEntity.isSituacao()) {
             throw new BadRequestException("O grupo se encontra fechado");
         }
         boolean pertenceAoGrupo = false;
@@ -105,7 +107,7 @@ public class GrupoService {
             throw new BadRequestException("Essa pessoa não pertence ao grupo");
         }
         for (DespesaEntity despesa : pessoaEntity.getDespesasPagas()) {
-            if(despesa.getGrupo().getId().equals(grupoId)){
+            if (despesa.getGrupo().getId().equals(grupoId)) {
                 throw new BadRequestException("A pessoa possui despesas pagas neste grupo e nao pode ser removida");
             }
         }
@@ -116,5 +118,37 @@ public class GrupoService {
         }
         grupoEntity.getPessoa().remove(pessoaEntity);
         pessoaEntity.getGrupo().remove(grupoEntity);
+    }
+
+    @Transactional
+    public void fecharGrupo(Integer grupoId) throws BadRequestException, NotFoundException {
+        GrupoEntity grupo = grupoRepository.findById(grupoId)
+                .orElseThrow(() -> new NotFoundException("Grupo nao encontrado"));
+        if (!grupo.isSituacao()) {
+            throw new BadRequestException("O grupo ja esta fechado");
+        }
+        for (PessoaEntity pessoa : grupo.getPessoa()) {
+            BigDecimal totalPago = BigDecimal.ZERO;
+            BigDecimal totalDevido = BigDecimal.ZERO;
+
+
+            for (DespesaEntity despesa : pessoa.getDespesasPagas()) {
+                if (despesa.getGrupo().getId().equals(grupoId)) {
+                    totalPago = totalPago.add(despesa.getValorTotal());
+                }
+            }
+
+            for (ParcelaEntity parcela : pessoa.getParcelas()) {
+                if (parcela.getDespesa().getGrupo().getId().equals(grupoId)) {
+                    totalDevido = totalDevido.add(parcela.getValor_da_parcela());
+                }
+            }
+
+            BigDecimal saldo = totalPago.subtract(totalDevido);
+            if (saldo.compareTo(BigDecimal.ZERO) != 0) {
+                throw new BadRequestException("O grupo possui participante com saldo pendente");
+            }
+        }
+        grupo.setSituacao(false);
     }
 }
