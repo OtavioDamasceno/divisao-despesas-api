@@ -1,8 +1,6 @@
 package com.example.divisaodespesas.dto.parcela;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,12 +14,13 @@ import java.math.BigDecimal;
 @Setter
 public class ParcelaRequestDTO {
 
-    @NotBlank
+    @NotNull
     @Positive
+    @Digits(integer = 12, fraction = 2)
     private BigDecimal valor_da_parcela;
-    @NotEmpty
     private Integer despesaId;
-    @NotEmpty
+    @NotNull
+    @Positive
     private Integer pessoaId;
 
 }

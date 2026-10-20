@@ -19,19 +19,19 @@ public class ParcelaController {
 
     private final ParcelaService parcelaService;
 
-    @GetMapping("/{parcelaid}")
+    @GetMapping("/{parcelaId}")
     @ResponseStatus(HttpStatus.OK)
     public ParcelaRequestDTO buscarPorId(@Valid @PathVariable Integer parcelaId) throws NotFoundException {
         return parcelaService.buscarPorId(parcelaId);
     }
 
-    @GetMapping("/pessoa/{pessoaid}")
+    @GetMapping("/pessoa/{pessoaId}")
     @ResponseStatus(HttpStatus.OK)
     public Set<ParcelaRequestDTO> buscarPorPessoa(@Valid @PathVariable Integer pessoaId) throws NotFoundException {
         return parcelaService.listarPorPessoa(pessoaId);
     }
 
-    @GetMapping("/despesas/{despesaid}")
+    @GetMapping("/despesas/{despesaId}")
     @ResponseStatus(HttpStatus.OK)
     public Set<ParcelaRequestDTO> listarPorDespesa(@Valid @PathVariable Integer despesaId) throws NotFoundException {
         return parcelaService.listarPorDespesa(despesaId);
